@@ -1,107 +1,85 @@
 # AGENTS.md
 
-This file provides guidance for AI coding agents working in this OpenCode configuration repository.
-
-## Project Overview
-
-This repository provides configuration files, commands, and skills for OpenCode CLI tool. It contains:
-- Setup script (`oc-cfg.sh`) for deploying configurations to user systems
-- Slash commands for common workflows
-- Skills for document manipulation (PPTX, DOCX, XLSX, PDF)
+Guidance for AI coding agents working in this OpenCode configuration repository.
 
 ## Commands
 
 ### Build/Setup
 
 ```bash
-./oc-cfg.sh              # Run setup script (copies files to target locations)
+./oc-cfg.sh              # Deploy configs to target locations
 ./oc-cfg.sh -h           # Show help
-./oc-cfg.sh --help       # Show help
 ```
 
 ### Testing
 
 ```bash
-./test_oc_cfg.sh         # Run all tests with coverage report (42 tests)
+./test_oc_cfg.sh         # Run all 42 tests with coverage
 
-# Run specific test branch by filtering output
-./test_oc_cfg.sh 2>&1 | grep -A10 "Branch 15"
+# Run single test branch
+./test_oc_cfg.sh 2>&1 | grep -A15 "Branch 7"
 ```
 
 ### Linting
 
 ```bash
-shellcheck oc-cfg.sh test_oc_cfg.sh   # Bash linting
-ruff check skills/                     # Python linting
-mypy skills/                           # Type checking
+shellcheck oc-cfg.sh test_oc_cfg.sh   # Bash
+ruff check skills/                     # Python
+mypy skills/                           # Types
 ```
 
-### Skill Scripts (Python)
+### Office Document Scripts
 
 ```bash
-# PPTX operations
-python -m markitdown presentation.pptx
-python scripts/thumbnail.py presentation.pptx
-python scripts/add_slide.py unpacked/ slide2.xml
-
-# DOCX operations
-python scripts/comment.py unpacked/ 0 "Comment text"
-
-# Office document utilities
+# Unpack/edit/pack workflow (PPTX, DOCX, XLSX)
 python scripts/office/unpack.py file.pptx unpacked/
 python scripts/office/pack.py unpacked/ output.pptx
 python scripts/office/validate.py unpacked/
+
+# PPTX: extract text or thumbnails
+python -m markitdown presentation.pptx
+python scripts/thumbnail.py presentation.pptx
+
+# DOCX: add comments
+python scripts/comment.py unpacked/ 0 "Comment text"
 ```
 
 ## Directory Structure
 
 ```
 oc-cfg/
-├── AGENTS.md              # This file - guidance for AI agents
+├── AGENTS.md              # This file - AI agent guidance
+├── AGENTS_md/             # → ~/.config/opencode/
+├── README.md              # Project overview
+├── commands/              # → ~/.opencode/commands/
 ├── oc-cfg.sh              # Main setup script
-├── test_oc_cfg.sh         # Test suite with coverage
-├── AGENTS_md/             # Files copied to ~/.config/opencode/
-│   ├── _agents._md        # Renamed to AGENTS.md on copy
-│   └── location           # Target path definition
-├── commands/              # Slash commands (~/.opencode/commands/)
-│   ├── gcom.md            # Git commit helper
-│   └── location
-├── skills/                # Skill directories (~/.config/opencode/skills/)
-│   ├── pptx/              # PowerPoint manipulation
-│   ├── docx/              # Word document manipulation
-│   ├── xlsx/              # Excel manipulation
-│   ├── pdf/               # PDF operations
-│   └── location
-└── specs/                 # Requirements and specifications
+├── skills/                # → ~/.config/opencode/skills/
+│   ├── docx/scripts/      # Word utilities
+│   ├── pdf/scripts/       # PDF utilities
+│   ├── pptx/scripts/      # PowerPoint utilities
+│   └── xlsx/scripts/      # Excel utilities
+└── test_oc_cfg.sh         # Test suite (42 tests, 100% coverage)
 ```
 
-## Code Style Guidelines
-
-### Bash Scripts
+## Code Style: Bash
 
 **Formatting:**
-- 4-space indentation (no tabs)
-- Shebang: `#!/bin/bash`
-- Get script directory: `SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"`
+- 4-space indentation, shebang `#!/bin/bash`
+- Script directory: `SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"`
 
 **Variables:**
-- Always use `local` for function-scoped variables
-- Quote all variable expansions: `"$variable"` not `$variable`
-- Use `[[ ]]` for conditionals, not `[ ]`
-
-**Functions:**
 ```bash
-copy_files_except_location() {
-    local src_dir="$1"
-    local dest_dir="$2"
-    
-    if [[ -n "$src_dir" ]]; then
-        echo "Processing $src_dir"
-    fi
-}
+local src_dir="$1"          # Always local, always quoted
+[[ -n "$src_dir" ]]         # Use [[ ]], not [ ]
 ```
 
-**Error Handling:**
+**Declare separately (shellcheck SC2155):**
+```bash
+local filename
+filename=$(basename "$file")
+```
+
+**Error handling:**
 ```bash
 if [[ -e "$dest_file" ]]; then
     echo "Error: $dest_file already exists" >&2
@@ -109,77 +87,97 @@ if [[ -e "$dest_file" ]]; then
 fi
 ```
 
-- Write errors to stderr: `>&2`
-- Exit with non-zero code on failure
-- Use `trap cleanup EXIT` for cleanup functions
+## Code Style: Python
 
-**Color Output:**
-```bash
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-NC='\033[0m'
-echo -e "${GREEN}[PASS]${NC} message"
-```
-
-### Python Scripts
-
-**Imports (alphabetically grouped):**
+**Imports (stdlib first, alphabetically):**
 ```python
-import re
+import argparse
 import sys
 from pathlib import Path
-from typing import Optional
 
 import defusedxml.minidom
+from PIL import Image
 ```
 
-**Type Hints:**
-```python
-def get_next_slide_number(slides_dir: Path) -> int:
-def parse_source(source: str) -> tuple[str, str | None]:
-```
-
-**Error Handling:**
-```python
-if not path.exists():
-    print(f"Error: {path} not found", file=sys.stderr)
-    sys.exit(1)
-```
-
-**Docstrings:**
+**Script structure:**
 ```python
 """Brief description.
 
 Usage: python script.py <args>
-
-Examples:
-    python script.py input.pptx
 """
+import argparse
+
+CONSTANT = 100
+
+
+def helper_function(path: Path) -> str:
+    ...
+
+
+def main():
+    parser = argparse.ArgumentParser(description="...")
+    parser.add_argument("input", help="Input file")
+    args = parser.parse_args()
+    
+    input_path = Path(args.input)
+    if not input_path.exists():
+        print(f"Error: {args.input} not found", file=sys.stderr)
+        sys.exit(1)
+    
+    print(helper_function(input_path))
+
+
+if __name__ == "__main__":
+    main()
 ```
 
-### Markdown Files
+**Type hints:**
+```python
+def get_slide_info(pptx_path: Path) -> list[dict]:
+def build_slide_list(slides: list[dict], cols: int) -> list[tuple[Path, str]]:
+```
+
+**XML handling (use defusedxml for security):**
+```python
+import defusedxml.minidom
+
+dom = defusedxml.minidom.parseString(xml_content)
+for elem in dom.getElementsByTagName("w:p"):
+    ...
+```
+
+## Code Style: Markdown
 
 **Commands (commands/*.md):**
-- First line: `---description: Brief description---`
-- Use `!`command`` for executable blocks
+```markdown
+---description: Brief description---
+Body content with `!`command`` for executable blocks.
+```
 
 **Skills (skills/*/SKILL.md):**
-- YAML frontmatter with `name` and `description`
-- Include Quick Reference table
+```markdown
+---
+name: skillname
+description: "What this skill does"
+---
+| Task | Command |
+|------|---------|
+| Read | `python -m markitdown file.pptx` |
+```
 
 ## Naming Conventions
 
 | Type | Convention | Example |
 |------|------------|---------|
-| Bash scripts | kebab-case | `oc-cfg.sh` |
+| Bash scripts | kebab-case.sh | `oc-cfg.sh` |
 | Bash functions | snake_case | `copy_files_except_location` |
-| Python files | snake_case | `add_slide.py` |
+| Python files | snake_case.py | `add_slide.py` |
 | Python functions | snake_case | `get_next_slide_number` |
 | Python classes | PascalCase | `SlideValidator` |
-| Directories | lowercase or UPPERCASE | `skills/pptx/`, `AGENTS_md/` |
-| Constants | UPPER_SNAKE | `RED='\033[0;31m'` |
+| Constants | UPPER_SNAKE | `THUMBNAIL_WIDTH` |
 
 ## Rules
 
 - NEVER add code comments unless explicitly requested
-- Keep responses concise (1-3 sentences when possible)
+- Keep responses concise (1-3 sentences)
+- Run `shellcheck` and tests before committing bash changes
