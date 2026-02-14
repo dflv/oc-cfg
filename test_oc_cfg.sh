@@ -125,12 +125,12 @@ copy_dirs_except_location() {
     done
 }
 
-agents_location=$(cat "$SCRIPT_DIR/agents_md/location")
+agents_location=$(cat "$SCRIPT_DIR/AGENTS_md/location")
 commands_location=$(cat "$SCRIPT_DIR/commands/location")
 skills_location=$(cat "$SCRIPT_DIR/skills/location")
 
-echo "Copying files from agents_md to $agents_location..."
-copy_files_except_location "$SCRIPT_DIR/agents_md" "$agents_location" "_AGENTS.md" "AGENTS.md"
+echo "Copying files from AGENTS_md to $agents_location..."
+copy_files_except_location "$SCRIPT_DIR/AGENTS_md" "$agents_location" "_agents._md" "AGENTS.md"
 
 echo "Copying files from commands to $commands_location..."
 copy_files_except_location "$SCRIPT_DIR/commands" "$commands_location"
@@ -148,13 +148,13 @@ setup_test_env() {
     TEST_SRC_DIR="$TEMP_TEST_DIR/src"
     TEST_DEST_DIR="$TEMP_TEST_DIR/dest"
     
-    mkdir -p "$TEST_SRC_DIR/agents_md"
+    mkdir -p "$TEST_SRC_DIR/AGENTS_md"
     mkdir -p "$TEST_SRC_DIR/commands"
     mkdir -p "$TEST_SRC_DIR/skills/test-skill"
     mkdir -p "$TEST_SRC_DIR/skills/skill-with-subdir/subdir"
     
-    echo "test agents content" > "$TEST_SRC_DIR/agents_md/AGENTS.md"
-    echo "$TEST_DEST_DIR/config/opencode" > "$TEST_SRC_DIR/agents_md/location"
+    echo "test agents content" > "$TEST_SRC_DIR/AGENTS_md/AGENTS.md"
+    echo "$TEST_DEST_DIR/config/opencode" > "$TEST_SRC_DIR/AGENTS_md/location"
     
     echo "test command content" > "$TEST_SRC_DIR/commands/gcom.md"
     echo "$TEST_DEST_DIR/opencode/command" > "$TEST_SRC_DIR/commands/location"
@@ -211,9 +211,9 @@ else
 fi
 
 if [[ -d "$TEST_DEST_DIR/config/opencode" ]]; then
-    pass "agents_md dest directory created"
+    pass "AGENTS_md dest directory created"
 else
-    fail "agents_md dest directory not created"
+    fail "AGENTS_md dest directory not created"
 fi
 
 if [[ -d "$TEST_DEST_DIR/opencode/command" ]]; then
@@ -271,9 +271,9 @@ else
 fi
 
 if [[ ! -f "$TEST_DEST_DIR/config/opencode/location" ]]; then
-    pass "location file excluded from agents_md copy"
+    pass "location file excluded from AGENTS_md copy"
 else
-    fail "location file should not be copied from agents_md"
+    fail "location file should not be copied from AGENTS_md"
 fi
 
 if [[ ! -f "$TEST_DEST_DIR/opencode/command/location" ]]; then
@@ -389,12 +389,12 @@ TEMP_TEST_DIR=$(mktemp -d)
 TEST_SRC_DIR="$TEMP_TEST_DIR/src"
 TEST_DEST_DIR="$HOME/.oc_cfg_test_temp_dest_$$"
 
-mkdir -p "$TEST_SRC_DIR/agents_md"
+mkdir -p "$TEST_SRC_DIR/AGENTS_md"
 mkdir -p "$TEST_SRC_DIR/commands"
 mkdir -p "$TEST_SRC_DIR/skills/test-skill"
 
-echo "test agents content" > "$TEST_SRC_DIR/agents_md/AGENTS.md"
-echo "~/.oc_cfg_test_temp_dest_$$/config/opencode" > "$TEST_SRC_DIR/agents_md/location"
+echo "test agents content" > "$TEST_SRC_DIR/AGENTS_md/AGENTS.md"
+echo "~/.oc_cfg_test_temp_dest_$$/config/opencode" > "$TEST_SRC_DIR/AGENTS_md/location"
 
 echo "test command content" > "$TEST_SRC_DIR/commands/gcom.md"
 echo "~/.oc_cfg_test_temp_dest_$$/opencode/command" > "$TEST_SRC_DIR/commands/location"
@@ -415,9 +415,9 @@ else
 fi
 
 if [[ -f "$TEST_DEST_DIR/config/opencode/AGENTS.md" ]]; then
-    pass "Tilde expansion works for agents_md path"
+    pass "Tilde expansion works for AGENTS_md path"
 else
-    fail "Tilde expansion failed for agents_md path"
+    fail "Tilde expansion failed for AGENTS_md path"
 fi
 
 if [[ -f "$TEST_DEST_DIR/opencode/command/gcom.md" ]]; then
@@ -478,8 +478,8 @@ rm -rf "$TEMP_TEST_DIR"
 echo ""
 echo "=== Branch 13: Multiple files in source ==="
 setup_test_env
-echo "another file" > "$TEMP_TEST_DIR/agents_md/another.md"
-echo "third file" > "$TEMP_TEST_DIR/agents_md/third.md"
+echo "another file" > "$TEMP_TEST_DIR/AGENTS_md/another.md"
+echo "third file" > "$TEMP_TEST_DIR/AGENTS_md/third.md"
 
 output=$("$TEMP_TEST_DIR/test-oc-cfg.sh" 2>&1)
 exit_code=$?
@@ -511,17 +511,17 @@ fi
 rm -rf "$TEMP_TEST_DIR"
 
 echo ""
-echo "=== Branch 15: Rename _AGENTS.md to AGENTS.md ==="
+echo "=== Branch 15: Rename _agents._md to AGENTS.md ==="
 TEMP_TEST_DIR=$(mktemp -d)
 TEST_SRC_DIR="$TEMP_TEST_DIR/src"
 TEST_DEST_DIR="$TEMP_TEST_DIR/dest"
 
-mkdir -p "$TEST_SRC_DIR/agents_md"
+mkdir -p "$TEST_SRC_DIR/AGENTS_md"
 mkdir -p "$TEST_SRC_DIR/commands"
 mkdir -p "$TEST_SRC_DIR/skills/test-skill"
 
-echo "renamed agents content" > "$TEST_SRC_DIR/agents_md/_AGENTS.md"
-echo "$TEST_DEST_DIR/config/opencode" > "$TEST_SRC_DIR/agents_md/location"
+echo "renamed agents content" > "$TEST_SRC_DIR/AGENTS_md/_agents._md"
+echo "$TEST_DEST_DIR/config/opencode" > "$TEST_SRC_DIR/AGENTS_md/location"
 
 echo "test command content" > "$TEST_SRC_DIR/commands/gcom.md"
 echo "$TEST_DEST_DIR/opencode/command" > "$TEST_SRC_DIR/commands/location"
@@ -536,21 +536,21 @@ output=$("$TEMP_TEST_DIR/test-oc-cfg.sh" 2>&1)
 exit_code=$?
 
 if [[ $exit_code -eq 0 ]]; then
-    pass "Script succeeds when _AGENTS.md needs renaming"
+    pass "Script succeeds when _agents._md needs renaming"
 else
-    fail "Script should succeed when _AGENTS.md needs renaming"
+    fail "Script should succeed when _agents._md needs renaming"
 fi
 
 if [[ -f "$TEST_DEST_DIR/config/opencode/AGENTS.md" ]]; then
-    pass "_AGENTS.md renamed to AGENTS.md"
+    pass "_agents._md renamed to AGENTS.md"
 else
-    fail "_AGENTS.md should be renamed to AGENTS.md"
+    fail "_agents._md should be renamed to AGENTS.md"
 fi
 
-if [[ ! -f "$TEST_DEST_DIR/config/opencode/_AGENTS.md" ]]; then
-    pass "_AGENTS.md not present in destination (renamed)"
+if [[ ! -f "$TEST_DEST_DIR/config/opencode/_agents._md" ]]; then
+    pass "_agents._md not present in destination (renamed)"
 else
-    fail "_AGENTS.md should not exist in destination"
+    fail "_agents._md should not exist in destination"
 fi
 
 content=$(cat "$TEST_DEST_DIR/config/opencode/AGENTS.md")
@@ -567,12 +567,12 @@ TEMP_TEST_DIR=$(mktemp -d)
 TEST_SRC_DIR="$TEMP_TEST_DIR/src"
 TEST_DEST_DIR="$TEMP_TEST_DIR/dest"
 
-mkdir -p "$TEST_SRC_DIR/agents_md"
+mkdir -p "$TEST_SRC_DIR/AGENTS_md"
 mkdir -p "$TEST_SRC_DIR/commands"
 mkdir -p "$TEST_SRC_DIR/skills/test-skill"
 
-echo "renamed agents content" > "$TEST_SRC_DIR/agents_md/_AGENTS.md"
-echo "$TEST_DEST_DIR/config/opencode" > "$TEST_SRC_DIR/agents_md/location"
+echo "renamed agents content" > "$TEST_SRC_DIR/AGENTS_md/_agents._md"
+echo "$TEST_DEST_DIR/config/opencode" > "$TEST_SRC_DIR/AGENTS_md/location"
 
 echo "test command content" > "$TEST_SRC_DIR/commands/gcom.md"
 echo "$TEST_DEST_DIR/opencode/command" > "$TEST_SRC_DIR/commands/location"
@@ -664,7 +664,7 @@ echo "  4. copy_files: dest dir not exists -> mkdir"
 echo "  5. copy_files: dest dir exists -> skip mkdir"
 echo "  6. copy_files: copy non-location files"
 echo "  7. copy_files: file exists -> error"
-echo "  8. copy_files: rename _AGENTS.md to AGENTS.md"
+echo "  8. copy_files: rename _agents._md to AGENTS.md"
 echo "  9. copy_files: rename fails if target exists"
 echo "  10. copy_dirs: dest dir not exists -> mkdir"
 echo "  11. copy_dirs: dest dir exists -> skip mkdir"

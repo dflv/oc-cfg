@@ -90,12 +90,12 @@ copy_dirs_except_location() {
     done
 }
 
-agents_location=$(cat "$SCRIPT_DIR/agents_md/location")
+agents_location=$(cat "$SCRIPT_DIR/AGENTS_md/location")
 commands_location=$(cat "$SCRIPT_DIR/commands/location")
 skills_location=$(cat "$SCRIPT_DIR/skills/location")
 
-echo "Copying files from agents_md to $agents_location..."
-copy_files_except_location "$SCRIPT_DIR/agents_md" "$agents_location" "_AGENTS.md" "AGENTS.md"
+echo "Copying files from AGENTS_md to $agents_location..."
+copy_files_except_location "$SCRIPT_DIR/AGENTS_md" "$agents_location" "_agents._md" "AGENTS.md"
 
 echo "Copying files from commands to $commands_location..."
 copy_files_except_location "$SCRIPT_DIR/commands" "$commands_location"

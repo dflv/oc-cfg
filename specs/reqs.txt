@@ -1,8 +1,8 @@
 这是一个OpenCode的配置项目，旨在一键完成初始Linux环境中OpenCode的配置工作。
 
 需要生成一个bash脚本，完成以下工作：
-1. 将$/agents_md中的文件（除location外），拷贝到location文件内容指定的目录中。
-    其中将目标文件名为_AGENTS.md的文件更名为AGENTS.md。
+1. 将$/AGENTS_md中的文件（除location外），拷贝到location文件内容指定的目录中。
+    其中将目标文件名为_agents._md的文件更名为AGENTS.md。
 2. 将$/commands中的文件（除location外），拷贝到location文件内容指定的目录汇。
 3. 将$/skills中的目录，拷贝到location文件内容指定的目录中。
 4. 脚本接受-h/--help参数，打印脚本目的和使用说明（英文）。
