@@ -5,12 +5,12 @@ OC_CFG_SCRIPT="$SCRIPT_DIR/oc-cfg.sh"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
 NC='\033[0m'
 
 TESTS_PASSED=0
 TESTS_FAILED=0
 
+# shellcheck disable=SC2317
 cleanup() {
     if [[ -n "$TEMP_TEST_DIR" && -d "$TEMP_TEST_DIR" ]]; then
         rm -rf "$TEMP_TEST_DIR"
@@ -53,7 +53,7 @@ Options:
 
 What this script does:
     1. Copies AGENTS.md to ~/.config/opencode/
-    2. Copies command files to ~/.opencode/command/
+    2. Copies command files to ~/.opencode/commands/
     3. Copies skill directories to ~/.config/opencode/skills/
 
 Safety:
@@ -157,7 +157,7 @@ setup_test_env() {
     echo "$TEST_DEST_DIR/config/opencode" > "$TEST_SRC_DIR/AGENTS_md/location"
     
     echo "test command content" > "$TEST_SRC_DIR/commands/gcom.md"
-    echo "$TEST_DEST_DIR/opencode/command" > "$TEST_SRC_DIR/commands/location"
+    echo "$TEST_DEST_DIR/opencode/commands" > "$TEST_SRC_DIR/commands/location"
     
     echo "test skill content" > "$TEST_SRC_DIR/skills/test-skill/SKILL.md"
     echo "nested skill" > "$TEST_SRC_DIR/skills/skill-with-subdir/SKILL.md"
@@ -216,7 +216,7 @@ else
     fail "AGENTS_md dest directory not created"
 fi
 
-if [[ -d "$TEST_DEST_DIR/opencode/command" ]]; then
+if [[ -d "$TEST_DEST_DIR/opencode/commands" ]]; then
     pass "commands dest directory created"
 else
     fail "commands dest directory not created"
@@ -233,7 +233,7 @@ echo ""
 echo "=== Branch 4: Dest dir already exists, mkdir not called ==="
 setup_test_env
 mkdir -p "$TEST_DEST_DIR/config/opencode"
-mkdir -p "$TEST_DEST_DIR/opencode/command"
+mkdir -p "$TEST_DEST_DIR/opencode/commands"
 mkdir -p "$TEST_DEST_DIR/config/opencode/skills"
 
 output=$("$TEMP_TEST_DIR/test-oc-cfg.sh" 2>&1)
@@ -264,7 +264,7 @@ else
     fail "AGENTS.md not copied to destination"
 fi
 
-if [[ -f "$TEST_DEST_DIR/opencode/command/gcom.md" ]]; then
+if [[ -f "$TEST_DEST_DIR/opencode/commands/gcom.md" ]]; then
     pass "gcom.md copied to destination"
 else
     fail "gcom.md not copied to destination"
@@ -276,7 +276,7 @@ else
     fail "location file should not be copied from AGENTS_md"
 fi
 
-if [[ ! -f "$TEST_DEST_DIR/opencode/command/location" ]]; then
+if [[ ! -f "$TEST_DEST_DIR/opencode/commands/location" ]]; then
     pass "location file excluded from commands copy"
 else
     fail "location file should not be copied from commands"
@@ -394,13 +394,13 @@ mkdir -p "$TEST_SRC_DIR/commands"
 mkdir -p "$TEST_SRC_DIR/skills/test-skill"
 
 echo "test agents content" > "$TEST_SRC_DIR/AGENTS_md/AGENTS.md"
-echo "~/.oc_cfg_test_temp_dest_$$/config/opencode" > "$TEST_SRC_DIR/AGENTS_md/location"
+echo "$HOME/.oc_cfg_test_temp_dest_$$/config/opencode" > "$TEST_SRC_DIR/AGENTS_md/location"
 
 echo "test command content" > "$TEST_SRC_DIR/commands/gcom.md"
-echo "~/.oc_cfg_test_temp_dest_$$/opencode/command" > "$TEST_SRC_DIR/commands/location"
+echo "$HOME/.oc_cfg_test_temp_dest_$$/opencode/commands" > "$TEST_SRC_DIR/commands/location"
 
 echo "test skill content" > "$TEST_SRC_DIR/skills/test-skill/SKILL.md"
-echo "~/.oc_cfg_test_temp_dest_$$/config/opencode/skills" > "$TEST_SRC_DIR/skills/location"
+echo "$HOME/.oc_cfg_test_temp_dest_$$/config/opencode/skills" > "$TEST_SRC_DIR/skills/location"
 
 create_test_script "$TEMP_TEST_DIR/test-oc-cfg.sh"
 cp -r "$TEST_SRC_DIR"/* "$TEMP_TEST_DIR/"
@@ -420,7 +420,7 @@ else
     fail "Tilde expansion failed for AGENTS_md path"
 fi
 
-if [[ -f "$TEST_DEST_DIR/opencode/command/gcom.md" ]]; then
+if [[ -f "$TEST_DEST_DIR/opencode/commands/gcom.md" ]]; then
     pass "Tilde expansion works for commands path"
 else
     fail "Tilde expansion failed for commands path"
@@ -524,7 +524,7 @@ echo "renamed agents content" > "$TEST_SRC_DIR/AGENTS_md/_agents._md"
 echo "$TEST_DEST_DIR/config/opencode" > "$TEST_SRC_DIR/AGENTS_md/location"
 
 echo "test command content" > "$TEST_SRC_DIR/commands/gcom.md"
-echo "$TEST_DEST_DIR/opencode/command" > "$TEST_SRC_DIR/commands/location"
+echo "$TEST_DEST_DIR/opencode/commands" > "$TEST_SRC_DIR/commands/location"
 
 echo "test skill content" > "$TEST_SRC_DIR/skills/test-skill/SKILL.md"
 echo "$TEST_DEST_DIR/config/opencode/skills" > "$TEST_SRC_DIR/skills/location"
@@ -575,7 +575,7 @@ echo "renamed agents content" > "$TEST_SRC_DIR/AGENTS_md/_agents._md"
 echo "$TEST_DEST_DIR/config/opencode" > "$TEST_SRC_DIR/AGENTS_md/location"
 
 echo "test command content" > "$TEST_SRC_DIR/commands/gcom.md"
-echo "$TEST_DEST_DIR/opencode/command" > "$TEST_SRC_DIR/commands/location"
+echo "$TEST_DEST_DIR/opencode/commands" > "$TEST_SRC_DIR/commands/location"
 
 echo "test skill content" > "$TEST_SRC_DIR/skills/test-skill/SKILL.md"
 echo "$TEST_DEST_DIR/config/opencode/skills" > "$TEST_SRC_DIR/skills/location"
@@ -605,7 +605,7 @@ rm -rf "$TEMP_TEST_DIR"
 echo ""
 echo "=== Branch 17: Verify actual script does not affect real config ==="
 REAL_AGENTS="$HOME/.config/opencode/AGENTS.md"
-REAL_COMMAND="$HOME/.opencode/command/gcom.md"
+REAL_COMMAND="$HOME/.opencode/commands/gcom.md"
 
 backup_file() {
     local file="$1"

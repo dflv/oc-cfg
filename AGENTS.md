@@ -63,7 +63,7 @@ oc-cfg/
 ├── AGENTS_md/             # Files copied to ~/.config/opencode/
 │   ├── _agents._md        # Renamed to AGENTS.md on copy
 │   └── location           # Target path definition
-├── commands/              # Slash commands (~/.opencode/command/)
+├── commands/              # Slash commands (~/.opencode/commands/)
 │   ├── gcom.md            # Git commit helper
 │   └── location
 ├── skills/                # Skill directories (~/.config/opencode/skills/)

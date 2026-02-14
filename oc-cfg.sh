@@ -18,7 +18,7 @@ Options:
 
 What this script does:
     1. Copies AGENTS.md to ~/.config/opencode/
-    2. Copies command files to ~/.opencode/command/
+    2. Copies command files to ~/.opencode/commands/
     3. Copies skill directories to ~/.config/opencode/skills/
 
 Safety:
@@ -51,7 +51,8 @@ copy_files_except_location() {
     fi
     
     for file in "$src_dir"/*; do
-        local filename=$(basename "$file")
+            local filename
+            filename=$(basename "$file")
         if [[ "$filename" != "location" ]]; then
             local dest_filename="$filename"
             if [[ -n "$rename_pattern" && "$filename" == "$rename_pattern" ]]; then
@@ -78,7 +79,8 @@ copy_dirs_except_location() {
     fi
     
     for item in "$src_dir"/*; do
-        local itemname=$(basename "$item")
+            local itemname
+            itemname=$(basename "$item")
         if [[ "$itemname" != "location" && -d "$item" ]]; then
             local dest_item="$dest_dir/$itemname"
             if [[ -e "$dest_item" ]]; then
