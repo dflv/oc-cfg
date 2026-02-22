@@ -5,23 +5,20 @@ Guidance for AI coding agents working in this OpenCode configuration repository.
 ## Commands
 
 ### Build/Setup
-
 ```bash
 ./oc-cfg.sh              # Deploy configs to target locations
 ./oc-cfg.sh -h           # Show help
 ```
 
 ### Testing
-
 ```bash
 ./test_oc_cfg.sh         # Run all 42 tests with coverage
 
-# Run single test branch
-./test_oc_cfg.sh 2>&1 | grep -A15 "Branch 7"
+# Run single test branch (1-17)
+./test_oc_cfg.sh 2>&1 | sed -n '/=== Branch 7:/,/=== Branch 8:/p'
 ```
 
 ### Linting
-
 ```bash
 shellcheck oc-cfg.sh test_oc_cfg.sh   # Bash
 ruff check skills/                     # Python
@@ -29,7 +26,6 @@ mypy skills/                           # Types
 ```
 
 ### Office Document Scripts
-
 ```bash
 # Unpack/edit/pack workflow (PPTX, DOCX, XLSX)
 python scripts/office/unpack.py file.pptx unpacked/
@@ -39,18 +35,13 @@ python scripts/office/validate.py unpacked/
 # PPTX: extract text or thumbnails
 python -m markitdown presentation.pptx
 python scripts/thumbnail.py presentation.pptx
-
-# DOCX: add comments
-python scripts/comment.py unpacked/ 0 "Comment text"
 ```
 
 ## Directory Structure
-
 ```
 oc-cfg/
-├── AGENTS.md              # This file - AI agent guidance
+├── AGENTS.md              # This file
 ├── AGENTS_md/             # → ~/.config/opencode/
-├── README.md              # Project overview
 ├── commands/              # → ~/.opencode/commands/
 ├── oc-cfg.sh              # Main setup script
 ├── skills/                # → ~/.config/opencode/skills/
@@ -62,7 +53,6 @@ oc-cfg/
 ```
 
 ## Code Style: Bash
-
 **Formatting:**
 - 4-space indentation, shebang `#!/bin/bash`
 - Script directory: `SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"`
@@ -88,7 +78,6 @@ fi
 ```
 
 ## Code Style: Python
-
 **Imports (stdlib first, alphabetically):**
 ```python
 import argparse
@@ -147,7 +136,6 @@ for elem in dom.getElementsByTagName("w:p"):
 ```
 
 ## Code Style: Markdown
-
 **Commands (commands/*.md):**
 ```markdown
 ---description: Brief description---
@@ -177,7 +165,9 @@ description: "What this skill does"
 | Constants | UPPER_SNAKE | `THUMBNAIL_WIDTH` |
 
 ## Rules
-
 - NEVER add code comments unless explicitly requested
 - Keep responses concise (1-3 sentences)
 - Run `shellcheck` and tests before committing bash changes
+- Use `defusedxml` for all XML parsing (security)
+- Always handle errors explicitly in Python (no bare except)
+- Prefer `Path` objects over string paths in Python

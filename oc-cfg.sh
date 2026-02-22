@@ -105,4 +105,7 @@ copy_files_except_location "$SCRIPT_DIR/commands" "$commands_location"
 echo "Copying directories from skills to $skills_location..."
 copy_dirs_except_location "$SCRIPT_DIR/skills" "$skills_location"
 
+echo "Please manually insert \"permissions\" block into opencode.json in ~/.config/opencode."
+echo "After that, please manually disable the password when running \"sudo\"."
+
 echo "OpenCode configuration completed successfully!"
