@@ -27,7 +27,7 @@ mypy skills/                           # Types
 
 ### Office Document Scripts
 ```bash
-# Unpack/edit/pack workflow (PPTX, DOCX, XLSX)
+# Unpack/edit/pack workflow (DOCX, PPTX, XLSX)
 python scripts/office/unpack.py file.pptx unpacked/
 python scripts/office/pack.py unpacked/ output.pptx
 python scripts/office/validate.py unpacked/
@@ -49,6 +49,7 @@ oc-cfg/
 │   ├── pdf/scripts/       # PDF utilities
 │   ├── pptx/scripts/      # PowerPoint utilities
 │   └── xlsx/scripts/      # Excel utilities
+├── _config/               # Configuration snippets
 └── test_oc_cfg.sh         # Test suite (42 tests, 100% coverage)
 ```
 
@@ -154,7 +155,6 @@ description: "What this skill does"
 ```
 
 ## Naming Conventions
-
 | Type | Convention | Example |
 |------|------------|---------|
 | Bash scripts | kebab-case.sh | `oc-cfg.sh` |
