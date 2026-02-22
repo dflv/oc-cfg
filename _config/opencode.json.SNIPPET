@@ -1,0 +1,23 @@
+NOTE: THIS IS NOT A VALID JSON FILE!
+
+Please manually insert the block "permission" below into your opencode.json in ~/.config/opencode.
+Then, please manually disable password when running "sudo".
+
+{
+  "$schema": "https://opencode.ai/config.json",
+  "autoupdate": true,
+  "plugin": ["opencode-antigravity-auth@latest"],
+    "permission": {
+    "bash": {
+      "*": "allow",
+      "sudo *": "ask"
+    },
+    "zsh": {
+      "*": "allow",
+      "sudo *": "ask"
+    }
+  },
+  "provider": {
+    ... ...
+  } 
+}
