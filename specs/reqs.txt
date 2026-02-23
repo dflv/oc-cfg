@@ -1,12 +1,22 @@
+This is an OpenCode configuration project, designed to complete OpenCode setup in a fresh Linux environment with one-click deployment.
 这是一个OpenCode的配置项目，旨在一键完成初始Linux环境中OpenCode的配置工作。
 
+A bash script shall be generated to perform the following tasks:
 需要生成一个bash脚本，完成以下工作：
-1. 将$/AGENTS_md中的文件（除location外），拷贝到location文件内容指定的目录中。
+1. Copy files from $/AGENTS_md (excluding location) to the directory specified in the location file content.
+   将$/AGENTS_md中的文件（除location外），拷贝到location文件内容指定的目录中。
+    Rename the file named _agents._md to AGENTS.md at the destination.
     其中将目标文件名为_agents._md的文件更名为AGENTS.md。
-2. 将$/commands中的文件（除location外），拷贝到location文件内容指定的目录汇。
-3. 将$/skills中的目录，拷贝到location文件内容指定的目录中。
-4. 脚本接受-h/--help参数，打印脚本目的和使用说明（英文）。
+2. Copy files from $/commands (excluding location) to the directory specified in the location file content.
+   将$/commands中的文件（除location外），拷贝到location文件内容指定的目录中。
+3. Copy directories from $/skills to the directory specified in the location file content.
+   将$/skills中的目录，拷贝到location文件内容指定的目录中。
+4. The script shall accept -h/--help arguments and print the script purpose and usage instructions (in English).
+   脚本接受-h/--help参数，打印脚本目的和使用说明（英文）。
 
+Requirements:
 规则：
-1. 如果目标目录不存在，则创建此目录后完成拷贝。
-2. 如果目标目录或文件已存在，则打印错误信息，包括某文件或目录已存在，然后退出。
+1. If the target directory does not exist, create it before completing the copy operation.
+   如果目标目录不存在，则创建此目录后完成拷贝。
+2. If the target directory or file already exists, print an error message indicating which file or directory exists, then exit.
+   如果目标目录或文件已存在，则打印错误信息，包括某文件或目录已存在，然后退出。
