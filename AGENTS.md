@@ -2,6 +2,12 @@
 
 Guidance for AI coding agents working in this OpenCode configuration repository.
 
+## Project Overview
+
+Deploys AI agent configs, slash commands, and skills to OpenCode directories.
+Each source directory contains a `location` file specifying its deployment target;
+these files are excluded from copying. The script never overwrites existing files.
+
 ## Commands
 
 ### Build/Setup
@@ -12,11 +18,17 @@ Guidance for AI coding agents working in this OpenCode configuration repository.
 
 ### Testing
 ```bash
-./test_oc_cfg.sh         # Run all 42 tests with coverage
+./test_oc_cfg.sh                        # Run all 42 tests (17 branches)
 
-# Run single test branch (1-17)
+# Run a single branch by number (1-17):
 ./test_oc_cfg.sh 2>&1 | sed -n '/=== Branch 7:/,/=== Branch 8:/p'
+
+# For the last branch (17), use end-of-output anchor:
+./test_oc_cfg.sh 2>&1 | sed -n '/=== Branch 17:/,/^Tests passed/p'
 ```
+
+Tests use `create_test_script()` to generate an isolated copy of `oc-cfg.sh`
+with controlled source/dest paths. Only Branch 17 runs the real script.
 
 ### Linting
 ```bash
@@ -27,33 +39,35 @@ mypy skills/                           # Types
 
 ### Office Document Scripts
 ```bash
-# Unpack/edit/pack workflow (DOCX, PPTX, XLSX)
-python scripts/office/unpack.py file.pptx unpacked/
-python scripts/office/pack.py unpacked/ output.pptx
-python scripts/office/validate.py unpacked/
-
-# PPTX: extract text or thumbnails
+python skills/docx/scripts/office/unpack.py file.docx unpacked/
+python skills/docx/scripts/office/pack.py unpacked/ output.docx
+python skills/docx/scripts/office/validate.py unpacked/
 python -m markitdown presentation.pptx
-python scripts/thumbnail.py presentation.pptx
 ```
 
 ## Directory Structure
 ```
 oc-cfg/
-├── AGENTS.md              # This file
-├── AGENTS_md/             # → ~/.config/opencode/
-├── commands/              # → ~/.opencode/commands/
-├── oc-cfg.sh              # Main setup script
+├── AGENTS.md, README.md   # Documentation
+├── AGENTS_md/             # → ~/.config/opencode/ (_agents._md → AGENTS.md)
+├── commands/              # → ~/.opencode/commands/ (slash commands)
+├── oc-cfg.sh              # Main deployment script
 ├── skills/                # → ~/.config/opencode/skills/
-│   ├── docx/scripts/      # Word utilities
-│   ├── pdf/scripts/       # PDF utilities
-│   ├── pptx/scripts/      # PowerPoint utilities
-│   └── xlsx/scripts/      # Excel utilities
-├── _config/               # Configuration snippets
-└── test_oc_cfg.sh         # Test suite (42 tests, 100% coverage)
+│   ├── docx/scripts/      # Word: unpack/pack/comment/accept_changes
+│   ├── pdf/scripts/       # PDF: form filling, extraction, validation
+│   ├── pptx/scripts/      # PowerPoint: add_slide
+│   ├── xlsx/scripts/      # Excel: recalc, shared office/ utilities
+│   └── (6 more skills)    # c-pro, cpp-pro, arch-design-review, etc.
+├── _config/               # Manual config snippets (not auto-deployed)
+├── specs/                 # Requirements specification (bilingual EN/CN)
+└── test_oc_cfg.sh         # Test suite (42 tests, 17 branches, 100% coverage)
 ```
 
+The `office/` subdirectory is duplicated between `docx/scripts/` and
+`xlsx/scripts/` — each skill is a self-contained deployable unit.
+
 ## Code Style: Bash
+
 **Formatting:**
 - 4-space indentation, shebang `#!/bin/bash`
 - Script directory: `SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"`
@@ -78,69 +92,61 @@ if [[ -e "$dest_file" ]]; then
 fi
 ```
 
+**Test conventions:**
+- `pass "desc"` / `fail "desc"` with ANSI color; `setup_test_env` + `trap cleanup EXIT`
+- Each branch: `echo "=== Branch N: description ==="`
+
 ## Code Style: Python
-**Imports (stdlib first, alphabetically):**
+
+**Imports** — stdlib first (alphabetical), blank line, then third-party:
 ```python
 import argparse
 import sys
 from pathlib import Path
 
 import defusedxml.minidom
-from PIL import Image
 ```
 
-**Script structure:**
+**Script structure** — docstring, imports, constants, helpers, `main()`, guard:
 ```python
 """Brief description.
 
 Usage: python script.py <args>
 """
 import argparse
-
-CONSTANT = 100
-
-
-def helper_function(path: Path) -> str:
-    ...
-
+from pathlib import Path
 
 def main():
     parser = argparse.ArgumentParser(description="...")
-    parser.add_argument("input", help="Input file")
     args = parser.parse_args()
-    
     input_path = Path(args.input)
     if not input_path.exists():
         print(f"Error: {args.input} not found", file=sys.stderr)
         sys.exit(1)
-    
-    print(helper_function(input_path))
-
 
 if __name__ == "__main__":
     main()
 ```
 
-**Type hints:**
+**Type hints** — Python 3.10+ syntax: `list[dict]`, `str | None`, `tuple[Path, str]`
+
+**Error return pattern** — return `tuple[None, str]`; check for `"Error"` in message:
 ```python
-def get_slide_info(pptx_path: Path) -> list[dict]:
-def build_slide_list(slides: list[dict], cols: int) -> list[tuple[Path, str]]:
+def do_something(path: Path) -> tuple[None, str]:
+    if not path.exists():
+        return None, f"Error: {path} not found"
+    return None, f"Success: processed {path}"
 ```
 
-**XML handling (use defusedxml for security):**
-```python
-import defusedxml.minidom
-
-dom = defusedxml.minidom.parseString(xml_content)
-for elem in dom.getElementsByTagName("w:p"):
-    ...
-```
+**XML handling** — use `defusedxml.minidom` for all parsing (security).
+Use `lxml.etree` only for XSD schema validation (in validators/).
 
 ## Code Style: Markdown
+
 **Commands (commands/*.md):**
 ```markdown
 ---description: Brief description---
-Body content with `!`command`` for executable blocks.
+Body content with executable blocks.
 ```
 
 **Skills (skills/*/SKILL.md):**
@@ -155,19 +161,22 @@ description: "What this skill does"
 ```
 
 ## Naming Conventions
+
 | Type | Convention | Example |
 |------|------------|---------|
 | Bash scripts | kebab-case.sh | `oc-cfg.sh` |
 | Bash functions | snake_case | `copy_files_except_location` |
 | Python files | snake_case.py | `add_slide.py` |
 | Python functions | snake_case | `get_next_slide_number` |
-| Python classes | PascalCase | `SlideValidator` |
+| Python classes | PascalCase | `BaseSchemaValidator` |
 | Constants | UPPER_SNAKE | `THUMBNAIL_WIDTH` |
 
 ## Rules
+
 - NEVER add code comments unless explicitly requested
 - Keep responses concise (1-3 sentences)
 - Run `shellcheck` and tests before committing bash changes
-- Use `defusedxml` for all XML parsing (security)
-- Always handle errors explicitly in Python (no bare except)
+- Use `defusedxml` for all XML parsing (security requirement)
+- Always handle errors explicitly in Python (no bare `except`)
 - Prefer `Path` objects over string paths in Python
+- Each skill must be self-contained (no cross-skill imports)
