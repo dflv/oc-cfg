@@ -71,13 +71,13 @@ copy_files_except_location() {
 copy_dirs_except_location() {
     local src_dir="$1"
     local dest_dir="$2"
-    
+
     dest_dir=$(expand_path "$dest_dir")
-    
+
     if [[ ! -d "$dest_dir" ]]; then
         mkdir -p "$dest_dir"
     fi
-    
+
     for item in "$src_dir"/*; do
             local itemname
             itemname=$(basename "$item")
