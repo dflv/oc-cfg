@@ -2,7 +2,12 @@
 
 Generate a concise and descriptive git commit message for the current changes.
 
-First, review what has changed:
+First, clean the codebase:
+- Remove temporary files (*.pyc, __pycache__/, .coverage, .pytest_cache/, etc.)
+- Remove debug/reproduction scripts (reproduce_*.py, debug_*.py, test_large.md, etc.)
+- Clean up any generated artifacts
+
+Then review what has changed:
 !`git status`
 
 Then look at the actual diff to understand the nature of changes:
@@ -13,7 +18,8 @@ Then look at the actual diff to understand the nature of changes:
 Based on the changes above, generate a git commit message following these conventions:
 - Use present tense (e.g., "Add feature" not "Added feature")
 - Keep it under 50 characters for the first line
-- Use type prefixes when applicable: feat:, fix:, docs:, style:, refactor:, test:, chore:
+- Parse the style of git logs in history and follow it in the latest git log
+- If no clear style found, use type prefixes when applicable: feat:, fix:, docs:, style:, refactor:, test:, chore:
 - Focus on WHAT and WHY, not HOW
 
 Then execute: git commit -m "<your generated message>"
