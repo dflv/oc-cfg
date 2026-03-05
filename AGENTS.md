@@ -13,6 +13,8 @@ these files are excluded from copying. The script never overwrites existing file
 ### Build/Setup
 ```bash
 ./oc-cfg.sh              # Deploy configs to target locations
+./oc-cfg.sh -r           # Reverse: copy from target locations back to repo
+./oc-cfg.sh -f           # Force: overwrite existing files (default mode only)
 ./oc-cfg.sh -h           # Show help
 ```
 
@@ -20,7 +22,7 @@ these files are excluded from copying. The script never overwrites existing file
 ```bash
 ./test_oc_cfg.sh                        # Run all 42 tests (17 branches)
 
-# Run a single branch by number (1-17):
+# Run a single test branch by number (1-17):
 ./test_oc_cfg.sh 2>&1 | sed -n '/=== Branch 7:/,/=== Branch 8:/p'
 
 # For the last branch (17), use end-of-output anchor:
@@ -33,8 +35,8 @@ with controlled source/dest paths. Only Branch 17 runs the real script.
 ### Linting
 ```bash
 shellcheck oc-cfg.sh test_oc_cfg.sh   # Bash
-ruff check skills/                     # Python
-mypy skills/                           # Types
+ruff check skills/                     # Python linting
+mypy skills/                           # Type checking
 ```
 
 ### Office Document Scripts
@@ -55,7 +57,7 @@ oc-cfg/
 ├── skills/                # → ~/.config/opencode/skills/
 │   ├── docx/scripts/      # Word: unpack/pack/comment/accept_changes
 │   ├── pdf/scripts/       # PDF: form filling, extraction, validation
-│   ├── pptx/scripts/      # PowerPoint: add_slide
+│   ├── pptx/scripts/      # PowerPoint: add_slide, clean, thumbnail
 │   ├── xlsx/scripts/      # Excel: recalc, shared office/ utilities
 │   └── (6 more skills)    # c-pro, cpp-pro, arch-design-review, etc.
 ├── _config/               # Manual config snippets (not auto-deployed)

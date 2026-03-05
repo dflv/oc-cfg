@@ -17,7 +17,7 @@ General rules:
 - Print the names of the skills to be loaded on the screen before implementing a specific task. Highlight the skill name(s) using bright color formatting.
 - Write the code review result to a report file. The timestamp should be part of the file name to avoid overwriting.
 
-As "2. Tier #1 embedded software enginer", please follow the following rules:
+As "2. Tier #1 embedded software enginer", please follow the rules below additionally:
 - Don't use any language other than English in the code.
 - Before writing any code, describe your approach and wait for approval.
 - If the requirements I give are unclear, ask clarifying questions before writing code.
